@@ -137,6 +137,59 @@ export default function ProTraderGold() {
               </div>
             )}
 
+            {/* Entry Timing Options (50/50 Split Strategy) */}
+            {step.status === 'in_progress' && step.entry_timing && (
+              <div className="mt-4 bg-gradient-to-r from-blue-900 to-purple-900 border border-blue-500 rounded-lg p-5">
+                <h4 className="text-xl font-bold text-white mb-3">
+                  ⚡ ENTRY TIMING OPTIONS (50/50 Split Strategy)
+                </h4>
+                <p className="text-blue-200 text-sm mb-4 italic">
+                  💡 {step.entry_timing.recommended}
+                </p>
+
+                {/* Early Entry Option */}
+                <div className={`mb-4 p-4 rounded-lg ${step.entry_timing.early_entry.available ? 'bg-yellow-900 border-2 border-yellow-500' : 'bg-gray-800 border border-gray-600'}`}>
+                  <div className="flex items-center justify-between mb-2">
+                    <h5 className="text-lg font-bold text-white">{step.entry_timing.early_entry.type}</h5>
+                    <span className={`px-3 py-1 rounded-full text-sm font-bold ${step.entry_timing.early_entry.available ? 'bg-yellow-500 text-black' : 'bg-gray-700 text-gray-400'}`}>
+                      {step.entry_timing.early_entry.status}
+                    </span>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <p className="text-gray-300"><strong>Trigger:</strong> {step.entry_timing.early_entry.trigger}</p>
+                    <p className="text-green-300"><strong>Entry Price:</strong> {step.entry_timing.early_entry.entry_price}</p>
+                    <p className="text-red-300"><strong>Stop Loss:</strong> {step.entry_timing.early_entry.stop_loss}</p>
+                    <p className="text-blue-300"><strong>Position Size:</strong> {step.entry_timing.early_entry.position_size}</p>
+                    <div className="mt-3 p-3 bg-gray-900 rounded">
+                      <p className="text-green-400 whitespace-pre-line mb-2">{step.entry_timing.early_entry.pros}</p>
+                      <p className="text-orange-400 whitespace-pre-line">{step.entry_timing.early_entry.cons}</p>
+                    </div>
+                    <p className={`mt-3 p-2 rounded font-bold text-center ${step.entry_timing.early_entry.available ? 'bg-yellow-600 text-black' : 'bg-gray-700 text-gray-300'}`}>
+                      {step.entry_timing.early_entry.action}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Confirmation Entry Option */}
+                <div className="p-4 rounded-lg bg-green-900 border-2 border-green-500">
+                  <h5 className="text-lg font-bold text-white mb-2">{step.entry_timing.confirmation_entry.type}</h5>
+                  <div className="space-y-2 text-sm">
+                    <p className="text-gray-300"><strong>Trigger:</strong> {step.entry_timing.confirmation_entry.trigger}</p>
+                    <p className="text-yellow-300"><strong>Expected Time:</strong> {step.entry_timing.confirmation_entry.expected_time} ({step.entry_timing.confirmation_entry.time_remaining})</p>
+                    <p className="text-green-300"><strong>Entry Price:</strong> {step.entry_timing.confirmation_entry.entry_price}</p>
+                    <p className="text-blue-300"><strong>Position Size:</strong> {step.entry_timing.confirmation_entry.position_size}</p>
+                    <div className="mt-3 p-3 bg-gray-900 rounded">
+                      <p className="text-green-400 whitespace-pre-line mb-2">{step.entry_timing.confirmation_entry.pros}</p>
+                      <p className="text-orange-400 whitespace-pre-line">{step.entry_timing.confirmation_entry.cons}</p>
+                    </div>
+                    <p className="mt-3 p-2 rounded font-bold text-center bg-green-600 text-white">
+                      {step.entry_timing.confirmation_entry.action}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Entry Options (for ready status) */}
             {step.status === 'ready' && step.entry_options && (
               <div className="mt-4 bg-green-900 rounded-lg p-4">
