@@ -121,21 +121,21 @@ export default function Home() {
       </section>
 
       {/* Navigation Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         {/* XAUUSD Card */}
         <Link href="/gold">
           <div className={`bg-gray-900 border ${xauusdStatus === 'signal' ? 'border-green-500 bg-green-950' : 'border-gray-700'} rounded-xl p-6 hover:border-yellow-500 transition-colors cursor-pointer`}>
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center">
                 <span className="text-2xl mr-3">💎</span>
-                <h3 className="text-2xl font-bold text-yellow-400">XAU/USD Gold</h3>
+                <h3 className="text-xl font-bold text-yellow-400">XAU/USD Gold</h3>
               </div>
               {xauusdStatus === 'signal' && (
                 <span className="bg-green-500 p-2 rounded-full">⚡</span>
               )}
             </div>
-            <p className="text-gray-400 mb-2">2:1 R:R • 98% S/R System</p>
-            <p className="text-yellow-400 text-2xl font-bold">
+            <p className="text-gray-400 text-sm mb-2">Algo • 2:1 R:R</p>
+            <p className="text-yellow-400 text-xl font-bold">
               ${data.pairs.XAUUSD?.data?.market_data?.current_price?.toFixed(2) || 'Loading...'}
             </p>
           </div>
@@ -147,15 +147,32 @@ export default function Home() {
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center">
                 <span className="text-2xl mr-3">📈</span>
-                <h3 className="text-2xl font-bold text-blue-400">GBP/USD</h3>
+                <h3 className="text-xl font-bold text-blue-400">GBP/USD</h3>
               </div>
               {gbpusdStatus === 'signal' && (
                 <span className="bg-green-500 p-2 rounded-full">⚡</span>
               )}
             </div>
-            <p className="text-gray-400 mb-2">4:1 R:R • Research-Based</p>
-            <p className="text-blue-400 text-2xl font-bold">
+            <p className="text-gray-400 text-sm mb-2">Algo • 4:1 R:R</p>
+            <p className="text-blue-400 text-xl font-bold">
               ${data.pairs.GBPUSD?.data?.market_data?.current_price?.toFixed(5) || 'Loading...'}
+            </p>
+          </div>
+        </Link>
+
+        {/* Pro Trader Gold Card - NEW */}
+        <Link href="/pro-trader-gold">
+          <div className="bg-gray-900 border border-purple-500 rounded-xl p-6 hover:border-purple-400 transition-colors cursor-pointer">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center">
+                <span className="text-2xl mr-3">📊</span>
+                <h3 className="text-xl font-bold text-purple-400">Pro Trader</h3>
+              </div>
+              <span className="bg-purple-600 px-2 py-1 rounded text-xs text-white">NEW</span>
+            </div>
+            <p className="text-gray-400 text-sm mb-2">XAUUSD • Live Setup</p>
+            <p className="text-purple-400 text-xl font-bold">
+              Educational Mode
             </p>
           </div>
         </Link>
