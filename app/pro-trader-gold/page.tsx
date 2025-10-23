@@ -423,8 +423,14 @@ export default function ProTraderGold() {
           <h2 className="text-2xl font-bold text-white mb-4">🎓 WHY THIS SETUP?</h2>
 
           {why_this_setup.daily && (
-            <div className="mb-4">
-              <h3 className="text-lg font-bold text-blue-400 mb-2">Daily Timeframe:</h3>
+            <div className="mb-4 p-4 bg-gray-800 rounded-lg">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-lg font-bold text-blue-400">Daily Timeframe (D1)</h3>
+                <div className="text-right">
+                  <p className="text-xs text-gray-500">Last updated: {why_this_setup.daily.last_updated}</p>
+                  <p className="text-xs text-gray-400">{why_this_setup.daily.next_update}</p>
+                </div>
+              </div>
               <ul className="list-disc list-inside text-gray-300 space-y-1">
                 {why_this_setup.daily.points?.map((point: string, i: number) => (
                   <li key={i}>{point}</li>
@@ -434,8 +440,14 @@ export default function ProTraderGold() {
           )}
 
           {why_this_setup.h4 && (
-            <div className="mb-4">
-              <h3 className="text-lg font-bold text-blue-400 mb-2">4-Hour Timeframe:</h3>
+            <div className="mb-4 p-4 bg-gray-800 rounded-lg">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-lg font-bold text-blue-400">4-Hour Timeframe (H4)</h3>
+                <div className="text-right">
+                  <p className="text-xs text-gray-500">Last updated: {why_this_setup.h4.last_updated}</p>
+                  <p className="text-xs text-gray-400">{why_this_setup.h4.next_update}</p>
+                </div>
+              </div>
               <ul className="list-disc list-inside text-gray-300 space-y-1">
                 {why_this_setup.h4.points?.map((point: string, i: number) => (
                   <li key={i}>{point}</li>
