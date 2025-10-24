@@ -7,6 +7,8 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:800
 
 export default function ProTraderGold() {
   const [setupData, setSetupData] = useState<any>(null);
+  const [bullishData, setBullishData] = useState<any>(null);
+  const [bearishData, setBearishData] = useState<any>(null);
   const [tradeStatus, setTradeStatus] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
@@ -18,7 +20,11 @@ export default function ProTraderGold() {
       const response = await fetch(`${BACKEND_URL}/api/pro-trader-gold/analysis`);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
-      setSetupData(data);
+      // New API returns bullish and bearish
+      setBullishData(data.bullish);
+      setBearishData(data.bearish);
+      // For backward compatibility, use bullish as primary setupData
+      setSetupData(data.bullish);
       setError('');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Network error');
@@ -133,14 +139,39 @@ export default function ProTraderGold() {
         </Link>
         <div className="flex items-center justify-center mb-3">
           <span className="text-4xl mr-3">📊</span>
-          <h1 className="text-4xl font-bold text-purple-400">Pro Trader - Gold Setup Tracker</h1>
+          <h1 className="text-4xl font-bold text-purple-400">Pro Traders - Gold Setups</h1>
         </div>
-        <p className="text-gray-400">Real-time educational breakdown • Learn as it trades</p>
+        <p className="text-gray-400">📈 Bullish (BUY) • 📉 Bearish (SELL) • Dual Scanning</p>
         <div className="mt-4">
           <span className="text-2xl text-yellow-400 font-bold">${current_price?.toFixed(2) || 'Loading...'}</span>
-          <span className="ml-4 text-purple-400">{inTrade ? '🔴 IN TRADE' : setup_status}</span>
+          <span className="ml-4 text-purple-400">{inTrade ? '🔴 IN TRADE' : 'SCANNING'}</span>
         </div>
       </header>
+
+      {/* DUAL TRADER STATUS */}
+      {!inTrade && bullishData && bearishData && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          {/* Bullish Trader Status */}
+          <div className="bg-gradient-to-br from-green-900 to-gray-900 border-2 border-green-500 rounded-xl p-4">
+            <h3 className="text-2xl font-bold text-green-400 mb-2">📈 BULLISH TRADER (BUY)</h3>
+            <p className="text-green-300 text-lg">Status: {bullishData.setup_status}</p>
+            <p className="text-gray-400 text-sm">Pattern: {bullishData.h1_setup?.pattern_type?.replace('_', ' ') || 'Scanning'}</p>
+            {bullishData.h1_setup?.direction && (
+              <p className="text-green-200 text-sm mt-2">Direction: {bullishData.h1_setup.direction}</p>
+            )}
+          </div>
+
+          {/* Bearish Trader Status */}
+          <div className="bg-gradient-to-br from-red-900 to-gray-900 border-2 border-red-500 rounded-xl p-4">
+            <h3 className="text-2xl font-bold text-red-400 mb-2">📉 BEARISH TRADER (SELL)</h3>
+            <p className="text-red-300 text-lg">Status: {bearishData.setup_status}</p>
+            <p className="text-gray-400 text-sm">Pattern: {bearishData.h1_setup?.pattern_type?.replace('_', ' ') || 'Scanning'}</p>
+            {bearishData.h1_setup?.direction && (
+              <p className="text-red-200 text-sm mt-2">Direction: {bearishData.h1_setup.direction}</p>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* TRADE MONITORING DASHBOARD - Shows when in active trade */}
       {inTrade && tradeStatus && (
