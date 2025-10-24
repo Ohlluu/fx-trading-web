@@ -9,6 +9,7 @@ export default function ProTraderGold() {
   const [setupData, setSetupData] = useState<any>(null);
   const [bullishData, setBullishData] = useState<any>(null);
   const [bearishData, setBearishData] = useState<any>(null);
+  const [selectedTrader, setSelectedTrader] = useState<'bullish' | 'bearish'>('bullish'); // Track which trader is selected
   const [tradeStatus, setTradeStatus] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
@@ -23,8 +24,7 @@ export default function ProTraderGold() {
       // New API returns bullish and bearish
       setBullishData(data.bullish);
       setBearishData(data.bearish);
-      // For backward compatibility, use bullish as primary setupData
-      setSetupData(data.bullish);
+      // Don't set setupData here - let the click handlers and useEffect handle it
       setError('');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Network error');
@@ -100,7 +100,14 @@ export default function ProTraderGold() {
       fetchTradeStatus();
     }, 60000); // Update every minute
     return () => clearInterval(interval);
-  }, []);
+  }, []); // Only run on mount
+
+  // Update setupData when selectedTrader or data changes
+  useEffect(() => {
+    if (bullishData && bearishData) {
+      setSetupData(selectedTrader === 'bullish' ? bullishData : bearishData);
+    }
+  }, [selectedTrader, bullishData, bearishData]);
 
   if (loading) {
     return (
@@ -148,28 +155,50 @@ export default function ProTraderGold() {
         </div>
       </header>
 
-      {/* DUAL TRADER STATUS */}
+      {/* DUAL TRADER STATUS - CLICKABLE CARDS */}
       {!inTrade && bullishData && bearishData && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          {/* Bullish Trader Status */}
-          <div className="bg-gradient-to-br from-green-900 to-gray-900 border-2 border-green-500 rounded-xl p-4">
+          {/* Bullish Trader Card - Clickable */}
+          <button
+            onClick={() => {
+              setSelectedTrader('bullish');
+              setSetupData(bullishData);
+            }}
+            className={`text-left bg-gradient-to-br from-green-900 to-gray-900 border-2 rounded-xl p-4 transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+              selectedTrader === 'bullish' ? 'border-green-400 shadow-green-500/50 shadow-xl' : 'border-green-600'
+            }`}
+          >
             <h3 className="text-2xl font-bold text-green-400 mb-2">📈 BULLISH TRADER (BUY)</h3>
             <p className="text-green-300 text-lg">Status: {bullishData.setup_status}</p>
             <p className="text-gray-400 text-sm">Pattern: {bullishData.h1_setup?.pattern_type?.replace('_', ' ') || 'Scanning'}</p>
             {bullishData.h1_setup?.direction && (
               <p className="text-green-200 text-sm mt-2">Direction: {bullishData.h1_setup.direction}</p>
             )}
-          </div>
+            {selectedTrader === 'bullish' && (
+              <p className="text-green-300 text-sm mt-2 font-semibold">✓ Selected - Viewing details below</p>
+            )}
+          </button>
 
-          {/* Bearish Trader Status */}
-          <div className="bg-gradient-to-br from-red-900 to-gray-900 border-2 border-red-500 rounded-xl p-4">
+          {/* Bearish Trader Card - Clickable */}
+          <button
+            onClick={() => {
+              setSelectedTrader('bearish');
+              setSetupData(bearishData);
+            }}
+            className={`text-left bg-gradient-to-br from-red-900 to-gray-900 border-2 rounded-xl p-4 transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+              selectedTrader === 'bearish' ? 'border-red-400 shadow-red-500/50 shadow-xl' : 'border-red-600'
+            }`}
+          >
             <h3 className="text-2xl font-bold text-red-400 mb-2">📉 BEARISH TRADER (SELL)</h3>
             <p className="text-red-300 text-lg">Status: {bearishData.setup_status}</p>
             <p className="text-gray-400 text-sm">Pattern: {bearishData.h1_setup?.pattern_type?.replace('_', ' ') || 'Scanning'}</p>
             {bearishData.h1_setup?.direction && (
               <p className="text-red-200 text-sm mt-2">Direction: {bearishData.h1_setup.direction}</p>
             )}
-          </div>
+            {selectedTrader === 'bearish' && (
+              <p className="text-red-300 text-sm mt-2 font-semibold">✓ Selected - Viewing details below</p>
+            )}
+          </button>
         </div>
       )}
 
