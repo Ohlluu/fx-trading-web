@@ -420,9 +420,47 @@ export default function ProTraderGold() {
                   {step.entry_options.map((option: any, i: number) => (
                     <div key={i} className="mb-4 p-3 bg-gray-800 rounded">
                       <h5 className="text-white font-bold mb-2">{option.type}</h5>
-                      <p className="text-gray-300 mb-1">Trigger: {option.trigger}</p>
+
+                      {/* Entry Details */}
+                      <div className="mb-3 space-y-1">
+                        <p className="text-gray-300">📍 <strong>Entry:</strong> {option.entry}</p>
+                        {option.stop_loss && (
+                          <p className="text-red-400">🛑 <strong>Stop Loss:</strong> {option.stop_loss}</p>
+                        )}
+                        {option.take_profit && (
+                          <p className="text-green-400">🎯 <strong>Take Profit:</strong> {option.take_profit}</p>
+                        )}
+                      </div>
+
+                      {/* Risk/Reward Metrics */}
+                      {option.risk_pips && (
+                        <div className="mb-3 p-2 bg-gray-900 rounded">
+                          <p className="text-sm text-gray-300">
+                            Risk: <span className="text-red-300">{option.risk_pips}</span> |
+                            Reward: <span className="text-green-300"> {option.reward_pips}</span>
+                          </p>
+                          <p className="text-sm text-blue-300">R:R = {option.risk_reward}</p>
+                        </div>
+                      )}
+
+                      {/* SL/TP Explanations */}
+                      {option.why_sl && (
+                        <div className="mb-2 p-2 bg-red-900 bg-opacity-20 rounded border border-red-800">
+                          <p className="text-xs text-red-300">{option.why_sl}</p>
+                        </div>
+                      )}
+                      {option.why_tp && (
+                        <div className="mb-3 p-2 bg-green-900 bg-opacity-20 rounded border border-green-800">
+                          <p className="text-xs text-green-300">{option.why_tp}</p>
+                        </div>
+                      )}
+
+                      {/* Trigger */}
+                      <p className="text-gray-300 mb-1 text-sm">⚡ <strong>Trigger:</strong> {option.trigger}</p>
                       {option.current && <p className="text-gray-400 text-sm">{option.current}</p>}
                       {option.current_count && <p className="text-gray-400 text-sm">{option.current_count}</p>}
+
+                      {/* Pros/Cons */}
                       <div className="mt-2 text-sm">
                         <span className="text-green-400">✓ {option.pros}</span>
                         <br />
@@ -430,6 +468,13 @@ export default function ProTraderGold() {
                       </div>
                     </div>
                   ))}
+
+                  {/* Recommendation */}
+                  {step.recommendation && (
+                    <div className="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border border-blue-700">
+                      <p className="text-sm text-blue-300">💡 <strong>Recommendation:</strong> {step.recommendation}</p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
