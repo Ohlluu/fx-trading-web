@@ -306,9 +306,141 @@ export default function ProTraderGold() {
       {!inTrade && (
         <section className="bg-gray-900 border border-purple-500 rounded-xl p-6 mb-6">
           <h2 className="text-2xl font-bold text-white mb-4">📋 CURRENT SETUP PLAN</h2>
-          <p className="text-lg text-purple-400 mb-6">
+          <p className="text-lg text-purple-400 mb-2">
             Pattern: {pattern_type?.replace('_', ' ') || 'Scanning'}
           </p>
+
+          {/* Confluence Score Display */}
+          {setupData.total_score !== undefined && (
+            <div className="mb-6 p-4 bg-gradient-to-r from-gray-800 to-gray-900 border-2 rounded-xl">
+              {/* Score Header */}
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-1">🎯 Confluence Analysis</h3>
+                  <p className="text-gray-400 text-sm">
+                    Professional multi-pattern detection system
+                  </p>
+                </div>
+                <div className="text-right">
+                  <div className="text-4xl font-bold">
+                    {setupData.total_score >= 10 && <span className="text-yellow-400">⭐⭐⭐</span>}
+                    {setupData.total_score >= 7 && setupData.total_score < 10 && <span className="text-blue-400">⭐⭐</span>}
+                    {setupData.total_score >= 5 && setupData.total_score < 7 && <span className="text-green-400">⭐</span>}
+                    {setupData.total_score < 5 && <span className="text-gray-500">⚠️</span>}
+                  </div>
+                  <div className={`text-2xl font-bold ${
+                    setupData.total_score >= 10 ? 'text-yellow-400' :
+                    setupData.total_score >= 7 ? 'text-blue-400' :
+                    setupData.total_score >= 5 ? 'text-green-400' :
+                    'text-gray-400'
+                  }`}>
+                    {setupData.total_score} points
+                  </div>
+                </div>
+              </div>
+
+              {/* Confidence Badge */}
+              {setupData.confidence && (
+                <div className="mb-4">
+                  <span className={`px-4 py-2 rounded-full text-sm font-bold ${
+                    setupData.confidence.includes('EXTREME') ? 'bg-yellow-500 text-black' :
+                    setupData.confidence.includes('HIGH') ? 'bg-blue-500 text-white' :
+                    'bg-green-500 text-white'
+                  }`}>
+                    {setupData.confidence}
+                  </span>
+                </div>
+              )}
+
+              {/* Entry Threshold Indicator */}
+              <div className="mb-4">
+                <div className="flex items-center justify-between text-xs text-gray-400 mb-1">
+                  <span>Entry Threshold</span>
+                  <span>5 points minimum</span>
+                </div>
+                <div className="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
+                  <div
+                    className={`h-full transition-all duration-500 ${
+                      setupData.total_score >= 10 ? 'bg-gradient-to-r from-yellow-500 to-yellow-400' :
+                      setupData.total_score >= 7 ? 'bg-gradient-to-r from-blue-500 to-blue-400' :
+                      setupData.total_score >= 5 ? 'bg-gradient-to-r from-green-500 to-green-400' :
+                      'bg-gray-600'
+                    }`}
+                    style={{ width: `${Math.min((setupData.total_score / 12) * 100, 100)}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Confluences List */}
+              {setupData.confluences && setupData.confluences.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-bold text-gray-300 mb-2 uppercase tracking-wide">
+                    Patterns Detected:
+                  </h4>
+                  <div className="space-y-2">
+                    {setupData.confluences.map((confluence: any, idx: number) => (
+                      <div key={idx} className="flex items-start gap-3 p-3 bg-gray-800 rounded-lg border border-gray-700">
+                        {/* Icon based on pattern type */}
+                        <span className="text-2xl flex-shrink-0">
+                          {confluence.type === 'LIQUIDITY_GRAB' && '🔥'}
+                          {confluence.type === 'FVG' && '📊'}
+                          {confluence.type === 'ORDER_BLOCK' && '📦'}
+                          {confluence.type === 'BREAKOUT_RETEST' && '🔄'}
+                          {confluence.type === 'BREAKDOWN_RETEST' && '🔽'}
+                          {confluence.type === 'DEMAND_ZONE' && '💚'}
+                          {confluence.type === 'SUPPLY_ZONE' && '🔴'}
+                          {confluence.type === 'BULLISH_BOS' && '📈'}
+                          {confluence.type === 'BEARISH_BOS' && '📉'}
+                        </span>
+
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-white font-semibold">
+                              {confluence.type.replace(/_/g, ' ')}
+                            </span>
+                            <span className={`px-2 py-0.5 rounded text-xs font-bold ${
+                              confluence.score === 4 ? 'bg-red-500 text-white' :
+                              confluence.score === 3 ? 'bg-orange-500 text-white' :
+                              'bg-blue-500 text-white'
+                            }`}>
+                              +{confluence.score}
+                            </span>
+                          </div>
+                          <p className="text-gray-300 text-sm">
+                            {confluence.description}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* No Confluence Warning */}
+              {setupData.confluences && setupData.confluences.length === 0 && setupData.total_score < 5 && (
+                <div className="p-3 bg-yellow-900/20 border border-yellow-600 rounded-lg">
+                  <p className="text-yellow-400 text-sm">
+                    ⚠️ <strong>Low Confluence</strong> - Need minimum 5 points to enter. Keep scanning...
+                  </p>
+                </div>
+              )}
+
+              {/* Structure Info */}
+              {setupData.structure && setupData.structure.structure_type !== 'NEUTRAL' && (
+                <div className="mt-4 p-3 bg-gray-800/50 border border-gray-700 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">
+                      {setupData.structure.structure_type.includes('BOS') && '✅'}
+                      {setupData.structure.structure_type.includes('CHOCH') && '⚠️'}
+                    </span>
+                    <span className="text-gray-300 text-sm">
+                      <strong>Market Structure:</strong> {setupData.structure.description || setupData.structure.structure_type.replace(/_/g, ' ')}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Setup Steps */}
           {setup_steps && setup_steps.map((step: any, idx: number) => (
