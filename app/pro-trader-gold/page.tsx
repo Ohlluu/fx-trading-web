@@ -185,36 +185,6 @@ export default function ProTraderGold() {
   const { setup_steps, live_candle, trade_plan, invalidation, why_this_setup, current_price, setup_status, pattern_type, confluences } = setupData;
   const inTrade = tradeStatus?.in_trade || false;
 
-  // Extract liquidity grab level from confluences
-  const getLiquidityGrabLevel = (): number | null => {
-    if (!confluences || !Array.isArray(confluences)) return null;
-
-    const liquidityGrab = confluences.find((c: any) => c.type === 'LIQUIDITY_GRAB');
-    if (!liquidityGrab) return null;
-
-    // Extract price from description like "Liquidity Grab at H4 support $4000.00!"
-    const match = liquidityGrab.description.match(/\$(\d+(?:\.\d+)?)/);
-    return match ? parseFloat(match[1]) : null;
-  };
-
-  // Helper function to convert pip offset to actual price
-  const convertPipToPrice = (pipString: string): string => {
-    if (!pipString) return pipString;
-
-    // Extract number from string like "$2.00" or "$-5.00"
-    const pipValue = parseFloat(pipString.replace('$', ''));
-    if (isNaN(pipValue)) return pipString;
-
-    // Get the base price (liquidity grab level)
-    const basePrice = getLiquidityGrabLevel();
-    if (!basePrice) return pipString;
-
-    // For gold (XAU/USD), 1 pip = $0.10
-    const actualPrice = basePrice + (pipValue / 10);
-
-    return `$${actualPrice.toFixed(2)}`;
-  };
-
   return (
     <main className="min-h-screen p-6 max-w-7xl mx-auto">
       {/* Header */}
@@ -803,7 +773,7 @@ export default function ProTraderGold() {
             <div>
               <h3 className="text-lg font-bold text-green-400">Entry:</h3>
               <p className="text-white text-xl">
-                {convertPipToPrice(trade_plan.entry_price)}
+                {trade_plan.entry_price}
               </p>
               <p className="text-gray-400 text-sm">{trade_plan.entry_method}</p>
             </div>
@@ -812,7 +782,7 @@ export default function ProTraderGold() {
               <div>
                 <h3 className="text-lg font-bold text-red-400">Stop Loss:</h3>
                 <p className="text-white text-xl">
-                  {convertPipToPrice(trade_plan.stop_loss.price)}
+                  {trade_plan.stop_loss.price}
                 </p>
                 <p className="text-gray-400 text-sm">{trade_plan.stop_loss.reason}</p>
                 <p className="text-gray-500 text-sm italic">{trade_plan.stop_loss.why}</p>
@@ -823,7 +793,7 @@ export default function ProTraderGold() {
               <div>
                 <h3 className="text-lg font-bold text-green-400">Take Profit 1 ({trade_plan.take_profit_1.rr_ratio}):</h3>
                 <p className="text-white text-xl">
-                  {convertPipToPrice(trade_plan.take_profit_1.price)}
+                  {trade_plan.take_profit_1.price}
                 </p>
                 <p className="text-gray-400 text-sm">{trade_plan.take_profit_1.action}</p>
                 <p className="text-gray-500 text-sm italic">{trade_plan.take_profit_1.why}</p>
@@ -834,7 +804,7 @@ export default function ProTraderGold() {
               <div>
                 <h3 className="text-lg font-bold text-green-400">Take Profit 2 ({trade_plan.take_profit_2.rr_ratio}):</h3>
                 <p className="text-white text-xl">
-                  {convertPipToPrice(trade_plan.take_profit_2.price)}
+                  {trade_plan.take_profit_2.price}
                 </p>
                 <p className="text-gray-400 text-sm">{trade_plan.take_profit_2.action}</p>
                 <p className="text-gray-500 text-sm italic">{trade_plan.take_profit_2.why}</p>
