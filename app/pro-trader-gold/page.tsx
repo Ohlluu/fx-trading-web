@@ -1,3 +1,51 @@
+/*
+ * PRO TRADER GOLD - XAUUSD Trading Dashboard
+ * ============================================
+ *
+ * DEPLOYMENT INFO:
+ * - Production Site: https://fx-trading-web-zcca.vercel.app/pro-trader-gold
+ * - Local Dev: http://localhost:3000/pro-trader-gold
+ * - Backend (Railway): https://web-production-8c5ca.up.railway.app
+ * - Backend Repo: https://github.com/Ohlluu/fx-trading-backend
+ *
+ * BACKEND API ENDPOINTS:
+ * - GET /api/pro-trader-gold/analysis - Returns bullish & bearish trader setups
+ * - GET /api/pro-trader-gold/trade-status - Returns current trade status
+ * - POST /api/pro-trader-gold/enter-trade - Enter a new trade position
+ * - POST /api/pro-trader-gold/exit-trade - Exit current trade position
+ *
+ * ENVIRONMENT VARIABLES:
+ * - NEXT_PUBLIC_BACKEND_URL - Set in Vercel to Railway URL for production
+ * - Local: Uses localhost:8002 from .env.local
+ *
+ * DATA STRUCTURE FROM API:
+ * {
+ *   bullish: {
+ *     setup_status: "RETEST_WAITING" | "SCANNING" | "READY",
+ *     pattern_type: "BREAKOUT_RETEST" | "LIQUIDITY_GRAB" | etc,
+ *     total_score: number (confluence points, need 5+ to enter),
+ *     confidence: string,
+ *     confluences: [{ type, score, description }],
+ *     setup_steps: [{ step, title, status, details, watching_for, entry_timing }],
+ *     trade_plan: { entry_price, stop_loss, take_profit_1, take_profit_2 },
+ *     current_price: number,
+ *     live_candle: { high, low, open, current, time_remaining },
+ *     why_this_setup: { daily, h4, h1, session },
+ *     invalidation: [{ condition, reason, action }]
+ *   },
+ *   bearish: { ... same structure ... }
+ * }
+ *
+ * FEATURES:
+ * - Dual trader system (bullish + bearish scanning simultaneously)
+ * - Confluence-based pattern detection (liquidity grabs, FVGs, order blocks, etc)
+ * - 50/50 split entry strategy (early entry + confirmation entry)
+ * - Real-time trade monitoring with P&L tracking
+ * - Step-by-step setup progression with "watching for" indicators
+ * - Multi-timeframe analysis (Daily, H4, H1)
+ * - Trade management alerts and position scaling
+ */
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -724,14 +772,22 @@ export default function ProTraderGold() {
           <div className="space-y-4">
             <div>
               <h3 className="text-lg font-bold text-green-400">Entry:</h3>
-              <p className="text-white text-xl">{trade_plan.entry_price}</p>
+              <p className="text-white text-xl">
+                {typeof trade_plan.entry_price === 'number'
+                  ? `$${trade_plan.entry_price.toFixed(2)}`
+                  : trade_plan.entry_price}
+              </p>
               <p className="text-gray-400 text-sm">{trade_plan.entry_method}</p>
             </div>
 
             {trade_plan.stop_loss && (
               <div>
                 <h3 className="text-lg font-bold text-red-400">Stop Loss:</h3>
-                <p className="text-white text-xl">{trade_plan.stop_loss.price}</p>
+                <p className="text-white text-xl">
+                  {typeof trade_plan.stop_loss.price === 'number'
+                    ? `$${trade_plan.stop_loss.price.toFixed(2)}`
+                    : trade_plan.stop_loss.price}
+                </p>
                 <p className="text-gray-400 text-sm">{trade_plan.stop_loss.reason}</p>
                 <p className="text-gray-500 text-sm italic">{trade_plan.stop_loss.why}</p>
               </div>
@@ -740,7 +796,11 @@ export default function ProTraderGold() {
             {trade_plan.take_profit_1 && (
               <div>
                 <h3 className="text-lg font-bold text-green-400">Take Profit 1 ({trade_plan.take_profit_1.rr_ratio}):</h3>
-                <p className="text-white text-xl">{trade_plan.take_profit_1.price}</p>
+                <p className="text-white text-xl">
+                  {typeof trade_plan.take_profit_1.price === 'number'
+                    ? `$${trade_plan.take_profit_1.price.toFixed(2)}`
+                    : trade_plan.take_profit_1.price}
+                </p>
                 <p className="text-gray-400 text-sm">{trade_plan.take_profit_1.action}</p>
                 <p className="text-gray-500 text-sm italic">{trade_plan.take_profit_1.why}</p>
               </div>
@@ -749,7 +809,11 @@ export default function ProTraderGold() {
             {trade_plan.take_profit_2 && (
               <div>
                 <h3 className="text-lg font-bold text-green-400">Take Profit 2 ({trade_plan.take_profit_2.rr_ratio}):</h3>
-                <p className="text-white text-xl">{trade_plan.take_profit_2.price}</p>
+                <p className="text-white text-xl">
+                  {typeof trade_plan.take_profit_2.price === 'number'
+                    ? `$${trade_plan.take_profit_2.price.toFixed(2)}`
+                    : trade_plan.take_profit_2.price}
+                </p>
                 <p className="text-gray-400 text-sm">{trade_plan.take_profit_2.action}</p>
                 <p className="text-gray-500 text-sm italic">{trade_plan.take_profit_2.why}</p>
               </div>
