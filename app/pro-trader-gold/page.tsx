@@ -63,6 +63,7 @@ export default function ProTraderGold() {
   const [error, setError] = useState<string>('');
   const [showEnterTradeModal, setShowEnterTradeModal] = useState(false);
   const [entryFormData, setEntryFormData] = useState<any>(null);
+  const [scanning, setScanning] = useState(false);
 
   const fetchSetup = async () => {
     try {
@@ -89,6 +90,25 @@ export default function ProTraderGold() {
       setTradeStatus(data);
     } catch (err) {
       console.error('Failed to fetch trade status:', err);
+    }
+  };
+
+  const triggerManualScan = async () => {
+    setScanning(true);
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/pro-trader-gold/scan`, {
+        method: 'POST'
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json();
+      // Update both bullish and bearish data
+      setBullishData(data.bullish);
+      setBearishData(data.bearish);
+      setError('');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Scan failed');
+    } finally {
+      setScanning(false);
     }
   };
 
@@ -197,9 +217,20 @@ export default function ProTraderGold() {
           <h1 className="text-4xl font-bold text-purple-400">Pro Traders - Gold Setups</h1>
         </div>
         <p className="text-gray-400">📈 Bullish (BUY) • 📉 Bearish (SELL) • Dual Scanning</p>
-        <div className="mt-4">
+        <div className="mt-4 flex items-center justify-center gap-4">
           <span className="text-2xl text-yellow-400 font-bold">${current_price?.toFixed(2) || 'Loading...'}</span>
-          <span className="ml-4 text-purple-400">{inTrade ? '🔴 IN TRADE' : 'SCANNING'}</span>
+          <span className="text-purple-400">{inTrade ? '🔴 IN TRADE' : 'SCANNING'}</span>
+          <button
+            onClick={triggerManualScan}
+            disabled={scanning}
+            className={`px-6 py-2 rounded-lg font-bold transition-all ${
+              scanning
+                ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                : 'bg-purple-600 hover:bg-purple-700 text-white hover:scale-105'
+            }`}
+          >
+            {scanning ? '🔄 Scanning...' : '🔍 New Scan'}
+          </button>
         </div>
       </header>
 
