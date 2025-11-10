@@ -63,6 +63,10 @@ export default function ProTraderGold() {
   const [error, setError] = useState<string>('');
   const [showEnterTradeModal, setShowEnterTradeModal] = useState(false);
   const [entryFormData, setEntryFormData] = useState<any>(null);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [telegramChatId, setTelegramChatId] = useState('');
+  const [telegramBotToken, setTelegramBotToken] = useState('');
+  const [settingsMessage, setSettingsMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
 
   const fetchSetup = async () => {
     try {
@@ -140,6 +144,51 @@ export default function ProTraderGold() {
     setShowEnterTradeModal(true);
   };
 
+  const saveTelegramSettings = async () => {
+    if (!telegramChatId) {
+      setSettingsMessage({type: 'error', text: 'Please enter your Telegram Chat ID'});
+      return;
+    }
+
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/settings/telegram`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: telegramChatId,
+          bot_token: telegramBotToken || undefined,
+          enabled: true
+        })
+      });
+      const result = await response.json();
+
+      if (result.success) {
+        setSettingsMessage({type: 'success', text: 'Settings saved! Test message sent to your Telegram.'});
+      } else {
+        setSettingsMessage({type: 'error', text: result.error || 'Failed to save settings'});
+      }
+    } catch (err) {
+      setSettingsMessage({type: 'error', text: 'Error saving settings: ' + err});
+    }
+  };
+
+  const sendTestNotification = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/settings/telegram/test`, {
+        method: 'POST'
+      });
+      const result = await response.json();
+
+      if (result.success) {
+        setSettingsMessage({type: 'success', text: 'Test notification sent! Check your Telegram.'});
+      } else {
+        setSettingsMessage({type: 'error', text: result.error || 'Failed to send test'});
+      }
+    } catch (err) {
+      setSettingsMessage({type: 'error', text: 'Error sending test: ' + err});
+    }
+  };
+
   useEffect(() => {
     fetchSetup();
     fetchTradeStatus();
@@ -189,9 +238,18 @@ export default function ProTraderGold() {
     <main className="min-h-screen p-6 max-w-7xl mx-auto">
       {/* Header */}
       <header className="text-center mb-6 pb-6 border-b border-gray-700">
-        <Link href="/" className="text-purple-400 hover:text-purple-300 inline-block mb-4">
-          ← Back to Dashboard
-        </Link>
+        <div className="flex justify-between items-start mb-4">
+          <Link href="/" className="text-purple-400 hover:text-purple-300">
+            ← Back to Dashboard
+          </Link>
+          <button
+            onClick={() => setShowSettingsModal(true)}
+            className="text-gray-400 hover:text-white transition-colors"
+            title="Notification Settings"
+          >
+            ⚙️ Settings
+          </button>
+        </div>
         <div className="flex items-center justify-center mb-3">
           <span className="text-4xl mr-3">📊</span>
           <h1 className="text-4xl font-bold text-purple-400">Pro Traders - Gold Setups</h1>
@@ -904,6 +962,92 @@ export default function ProTraderGold() {
                 className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-bold"
               >
                 ✅ Confirm Entry
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Settings Modal - Telegram Notifications */}
+      {showSettingsModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-gray-900 border-2 border-purple-500 rounded-xl p-6 max-w-lg w-full mx-4">
+            <h2 className="text-2xl font-bold text-white mb-4">⚙️ Telegram Notifications</h2>
+
+            <div className="mb-6 p-4 bg-blue-900 bg-opacity-30 rounded-lg border border-blue-700">
+              <h3 className="text-lg font-bold text-blue-300 mb-2">📱 How to Set Up:</h3>
+              <ol className="text-sm text-gray-300 space-y-2 list-decimal list-inside">
+                <li>Open Telegram and search for <strong className="text-white">@ProTraderGoldBot</strong></li>
+                <li>Start a chat with the bot (click Start)</li>
+                <li>The bot will send you your Chat ID</li>
+                <li>Copy the Chat ID and paste it below</li>
+                <li>Click Save to enable notifications</li>
+              </ol>
+              <p className="text-yellow-300 text-xs mt-3">
+                💡 You'll receive alerts when confluence score reaches 7+ points
+              </p>
+            </div>
+
+            {settingsMessage && (
+              <div className={`mb-4 p-3 rounded-lg ${
+                settingsMessage.type === 'success' ? 'bg-green-900 border border-green-500 text-green-200' :
+                'bg-red-900 border border-red-500 text-red-200'
+              }`}>
+                {settingsMessage.text}
+              </div>
+            )}
+
+            <div className="space-y-4 mb-6">
+              <div>
+                <label className="text-gray-400 text-sm block mb-2">
+                  Telegram Chat ID <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={telegramChatId}
+                  onChange={(e) => setTelegramChatId(e.target.value)}
+                  placeholder="e.g., 123456789"
+                  className="w-full bg-gray-800 text-white p-3 rounded-lg border border-gray-700 focus:border-purple-500 outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="text-gray-400 text-sm block mb-2">
+                  Bot Token <span className="text-gray-500">(Optional - use default bot)</span>
+                </label>
+                <input
+                  type="text"
+                  value={telegramBotToken}
+                  onChange={(e) => setTelegramBotToken(e.target.value)}
+                  placeholder="Leave blank to use default bot"
+                  className="w-full bg-gray-800 text-white p-3 rounded-lg border border-gray-700 focus:border-purple-500 outline-none"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowSettingsModal(false);
+                  setSettingsMessage(null);
+                }}
+                className="flex-1 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg"
+              >
+                Cancel
+              </button>
+              {telegramChatId && (
+                <button
+                  onClick={sendTestNotification}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold"
+                >
+                  📤 Test
+                </button>
+              )}
+              <button
+                onClick={saveTelegramSettings}
+                className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-bold"
+              >
+                💾 Save
               </button>
             </div>
           </div>
