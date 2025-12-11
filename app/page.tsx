@@ -14,7 +14,7 @@ export default function Home() {
         </div>
         <p className="text-gray-400">ICT/Smart Money Confluence System</p>
         <p className="text-gray-500 text-sm mt-2">
-          XAUUSD Gold • EURUSD • Professional Setups
+          XAUUSD Gold • EURUSD • GBPUSD • Professional Setups
         </p>
       </header>
 
@@ -38,7 +38,7 @@ export default function Home() {
           </div>
         </Link>
 
-        {/* Pro Trader EUR/USD Card - NEW */}
+        {/* Pro Trader EUR/USD Card */}
         <Link href="/pro-trader-eurusd">
           <div className="bg-gray-900 border border-cyan-500 rounded-xl p-6 hover:border-cyan-400 transition-colors cursor-pointer">
             <div className="flex items-center justify-between mb-2">
@@ -46,10 +46,27 @@ export default function Home() {
                 <span className="text-2xl mr-3">💱</span>
                 <h3 className="text-xl font-bold text-cyan-400">Pro Trader</h3>
               </div>
-              <span className="bg-cyan-600 px-2 py-1 rounded text-xs text-white">NEW</span>
+              <span className="bg-cyan-600 px-2 py-1 rounded text-xs text-white">EUR/USD</span>
             </div>
             <p className="text-gray-400 text-sm mb-2">EURUSD • Live Setup</p>
             <p className="text-cyan-400 text-xl font-bold">
+              Educational Mode
+            </p>
+          </div>
+        </Link>
+
+        {/* Pro Trader GBP/USD Card - NEW */}
+        <Link href="/pro-trader-gbpusd">
+          <div className="bg-gray-900 border border-green-500 rounded-xl p-6 hover:border-green-400 transition-colors cursor-pointer">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center">
+                <span className="text-2xl mr-3">💷</span>
+                <h3 className="text-xl font-bold text-green-400">Pro Trader</h3>
+              </div>
+              <span className="bg-green-600 px-2 py-1 rounded text-xs text-white">NEW</span>
+            </div>
+            <p className="text-gray-400 text-sm mb-2">GBPUSD • Live Setup</p>
+            <p className="text-green-400 text-xl font-bold">
               Educational Mode
             </p>
           </div>
